@@ -17,23 +17,27 @@ export default function PlayerInfo() {
     return Math.floor(Math.random() * (max - min) + min);
   };
 
+  //   This function adds a point to the stat in question.
+  // It doesn't allow the stat to go above 100 or upgradePoints to go below 0.
   const addPoint = (getter, setter) => {
-    if ((upgradePoints = 100)) {
+    if (upgradePoints == 100 && getter != 60) {
+      return;
+    } else if (getter == 100) {
       return;
     } else {
       setter(getter + 1);
-      upgradePoints--;
+      setUpgradePoints(upgradePoints - 1);
     }
   };
 
   //  This function removes an added point from the stat in question.
   //  It doesn't allow the stat to go below 60 and it doesn't allow upgradePoints to go below 0.
   const subPoint = (getter, setter) => {
-    if ((upgradePoints = 0) || getter == 60) {
+    if (upgradePoints == 0 || (getter <= 60 && getter <= 100)) {
       return;
     } else {
       setter(getter - 1);
-      upgradePoints++;
+      setUpgradePoints(upgradePoints + 1);
     }
   };
 
@@ -64,7 +68,16 @@ export default function PlayerInfo() {
           Arm Strength: <span>{armStr}</span>
         </h2>
         {/* For some reason we don't get expected functionality from add or sub buttons. */}
-        <button onClick={() => addPoint(armStr, setArmStr)}>+</button>
+        <button
+          onClick={() => {
+            console.log("click 1");
+            addPoint(armStr, setArmStr);
+            console.log("click 2");
+            console.log(armStr);
+          }}
+        >
+          +
+        </button>
         <button onClick={() => subPoint(armStr, setArmStr)}>-</button>
       </div>
       <h2>
