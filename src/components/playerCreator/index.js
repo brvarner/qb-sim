@@ -10,7 +10,7 @@ export default function PlayerCreator() {
   let [speed, setSpeed] = useState(60);
   let [accel, setAccel] = useState(60);
   let [decMak, setDecMak] = useState(60);
-  let [upgradePoints, setUpgradePoints] = useState(100);
+  let [upgradePoints, setUpgradePoints] = useState(25);
 
   // WR States
   const [wrSpeed, setWrSpeed] = useState(60);
@@ -30,17 +30,86 @@ export default function PlayerCreator() {
     return Math.floor(Math.random() * (max - min) + min);
   };
 
+  // We create an object to hold the states of both combatants so that they can easily go into the
+  // battle function.
+  const wrObj = {
+    speed: wrSpeed,
+    accel: wrAccel,
+    routeR,
+    catching: wrCatch,
+  };
+
+  const cbObj = {
+    speed: cbSpeed,
+    accel: cbAccel,
+    coverage,
+    catching: cbCatch,
+  };
+
   // Here's the dice roll function
   const battleRoll = (wrStat, cbStat) => {
+    // We create two variables, one hold the result of a WR skill check up to 100,
+    // the other holds the result of a CB skill check up to 100.
+    // The WR/CB's stat in question serves as the possible minimum for the roll.
     let wrRoll = Math.floor(Math.random() * (100 - wrStat) + wrStat);
     let cbRoll = Math.floor(Math.random() * (100 - cbStat) + cbStat);
 
     if (wrRoll > cbRoll) {
-      console.log("wr wins!", { wrStat }, { wrRoll });
-    } else {
-      console.log("cb wins!", { cbStat }, { cbRoll });
+      return {
+        wrWins: true,
+        wrWinDiff: wrRoll - cbRoll,
+        cbWinDiff: null,
+      };
+    } else if (cbRoll > wrRoll) {
+      return {
+        wrWins: false,
+        cbWinDiff: cbRoll - wrRoll,
+        wrWinDiff: null,
+      };
+    } else if (wrRoll === cbRoll) {
+      return "Push";
     }
   };
+
+  // This function is the big bad battle. Acceleration determines who wins off the line, so that counts for the first
+  // 1 seconds of the route. Speed determines who's more likely to win after that.
+  // Unless the speed win is above 10 or more, you have three coverage vs. route running rolls,
+  // best two out of three wins, unless one has a roll that's a 95+, then that's an automatic win.
+  // Whoever wins has a +10 advantage to a catch, but if they lost on a 95+ critical, or if they lose by 20 or more,
+  // they don't even get a catch roll. Later we'll add a yardage estimation (for short, medium, and long)
+  // to progress down the field.
+
+  const cbReceiverWar = (obj1, obj2) => {
+    // Accel war
+    let accelFight = battleRoll(obj1.accel, obj2.accel);
+
+    if (accelFight.wrWins == true && accelFight.wrWinDiff <= 10) {
+      console.log("WR Win Diff", accelFight.wrWinDiff);
+      speedBattle(accelFight, wrObj, cbObj);
+    } else {
+      console.log("CB Win Diff", accelFight.cbWinDiff);
+      speedBattle(accelFight, wrObj, cbObj);
+    }
+  };
+
+  // This is the speed battle subfunction of the larger full battle function.
+  // Obj 1 is the result of the accelFight, obj2 is WR, obj3 is CB.
+  const speedBattle = (obj1, obj2, obj3) => {
+    let speedFight = battleRoll(obj2.speed, obj3.speed);
+
+    if (obj1.wrWinDiff != null && obj1.wrWinDiff < 10) {
+      console.log("WR accel win, speedfight result: ", speedFight);
+    } else if (obj1.cbWinDiff != null && obj1.cbWinDiff < 10) {
+      console.log("CB accel win, speedfight result: ", speedFight);
+    } else if (obj1.wrWinDiff >= 10) {
+      console.log("CRITICAL WR WIN, speedfight result: ", speedFight);
+    } else if (obj1.cbWinDiff >= 10) {
+      console.log("CRITICAL CB WIN, speedfight result: ", speedFight);
+    }
+  };
+
+  // This is the route running v coverage battle subfunction of the larger full battle function.
+  // Obj 1 is the result of the speedFight, obj2 is WR, obj3 is CB.
 
   // For now, receivers have 4 stats: speed, accel, route running and catching.
   // Accel determines if they can beat a corner right off the line.
@@ -205,14 +274,14 @@ export default function PlayerCreator() {
         </div>
       </div>
       <div>
-        <h1>Rock and Roll! Let's play!</h1>onClick={() => {
-            setArmStr(statGenerator(60, 99));
-            setAccuracy(statGenerator(60, 99));
-            setSpeed(statGenerator(60, 99));
-            setAccel(statGenerator(60, 99));
-            setDecMak(statGenerator(60, 99));
+        <h1>Rock and Roll! Let's play!</h1>
+        <button
+          onClick={() => {
+            cbReceiverWar(wrObj, cbObj);
           }}
-        <button onClick={() => battleRoll(wrAccel, cbAccel)}>Go!</button>
+        >
+          Go!
+        </button>
       </div>
     </div>
   );
