@@ -24,6 +24,14 @@ export default function PlayerCreator() {
   const [coverage, setCoverage] = useState(60);
   const [cbCatch, setCbCatch] = useState(60);
 
+  // Battle States
+  const [accelWin, setAccelWin] = useState("");
+  const [speedWin, setSpeedWin] = useState("");
+  const [coverWin, setCoverWin] = useState("");
+  const [accelCrit, setAccelCrit] = useState(false);
+  const [speedCrit, setSpeedCrit] = useState(false);
+  const [coverCrit, setCoverCrit] = useState(false);
+
   const statGenerator = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -85,10 +93,14 @@ export default function PlayerCreator() {
 
     if (accelFight.wrWins == true && accelFight.wrWinDiff <= 10) {
       console.log("WR Win Diff", accelFight.wrWinDiff);
-      speedBattle(accelFight, wrObj, cbObj);
+      let speedRes = speedBattle(accelFight, wrObj, cbObj);
+      console.log(speedRes);
+      // routeVCover(speedRes, wrObj, cbObj);
     } else {
       console.log("CB Win Diff", accelFight.cbWinDiff);
-      speedBattle(accelFight, wrObj, cbObj);
+      let speedRes = speedBattle(accelFight, wrObj, cbObj);
+      console.log(speedRes);
+      // routeVCover(speedRes, wrObj, cbObj);
     }
   };
 
@@ -97,6 +109,7 @@ export default function PlayerCreator() {
   const speedBattle = (obj1, obj2, obj3) => {
     let speedFight = battleRoll(obj2.speed, obj3.speed);
 
+    // We need implement the states for the wins, the result of speedfight, and the crit bools.
     if (obj1.wrWinDiff != null && obj1.wrWinDiff < 10) {
       console.log("WR accel win, speedfight result: ", speedFight);
     } else if (obj1.cbWinDiff != null && obj1.cbWinDiff < 10) {
@@ -110,6 +123,19 @@ export default function PlayerCreator() {
 
   // This is the route running v coverage battle subfunction of the larger full battle function.
   // Obj 1 is the result of the speedFight, obj2 is WR, obj3 is CB.
+  const routeVCover = (obj1, obj2, obj3) => {
+    let coverFight = battleRoll(obj2.routeR, obj3.coverage);
+
+    if (obj1.wrWins === true && obj1.wrWinDiff < 10) {
+      console.log("WR speed win, coverfight result: ", coverFight);
+    } else if (obj1.wrWins === false && obj1.cbWinDiff < 10) {
+      console.log("CB speed win, coverfight result: ", coverFight);
+    } else if (obj1.wrWinDiff >= 10) {
+      console.log("CRITICAL WR WIN, coverfight result: ", coverFight);
+    } else if (obj1.cbWinDiff >= 10) {
+      console.log("CRITICAL CB WIN, coverfight result: ", coverFight);
+    }
+  };
 
   // For now, receivers have 4 stats: speed, accel, route running and catching.
   // Accel determines if they can beat a corner right off the line.
