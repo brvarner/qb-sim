@@ -28,9 +28,9 @@ export default function PlayerCreator() {
   const [accelWin, setAccelWin] = useState("");
   const [speedWin, setSpeedWin] = useState("");
   const [coverWin, setCoverWin] = useState("");
-  const [accelCrit, setAccelCrit] = useState(false);
-  const [speedCrit, setSpeedCrit] = useState(false);
-  const [coverCrit, setCoverCrit] = useState(false);
+  const [accelCrit, setAccelCrit] = useState({ "": false });
+  const [speedCrit, setSpeedCrit] = useState({ "": false });
+  const [coverCrit, setCoverCrit] = useState({ "": false });
 
   const statGenerator = (min, max) => {
     min = Math.ceil(min);
@@ -99,6 +99,7 @@ export default function PlayerCreator() {
     } else {
       console.log("CB Win Diff", accelFight.cbWinDiff);
       let speedRes = speedBattle(accelFight, wrObj, cbObj);
+      // speedRes not working, need to figure out why
       console.log(speedRes);
       // routeVCover(speedRes, wrObj, cbObj);
     }
@@ -110,14 +111,18 @@ export default function PlayerCreator() {
     let speedFight = battleRoll(obj2.speed, obj3.speed);
 
     // We need implement the states for the wins, the result of speedfight, and the crit bools.
-    if (obj1.wrWinDiff != null && obj1.wrWinDiff < 10) {
+    if (obj1.wrWinDiff != null && obj1.wrWinDiff <= 10) {
       console.log("WR accel win, speedfight result: ", speedFight);
-    } else if (obj1.cbWinDiff != null && obj1.cbWinDiff < 10) {
+    } else if (obj1.cbWinDiff != null && obj1.cbWinDiff <= 10) {
       console.log("CB accel win, speedfight result: ", speedFight);
-    } else if (obj1.wrWinDiff >= 10) {
+    } else if (obj1.wrWinDiff > 10) {
       console.log("CRITICAL WR WIN, speedfight result: ", speedFight);
-    } else if (obj1.cbWinDiff >= 10) {
+      setSpeedCrit({ wr: true });
+      console.log(speedCrit);
+    } else if (obj1.cbWinDiff > 10) {
       console.log("CRITICAL CB WIN, speedfight result: ", speedFight);
+      setSpeedCrit({ cb: true });
+      console.log(speedCrit);
     }
   };
 
