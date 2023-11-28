@@ -85,6 +85,91 @@ function routeVCover(
   }
 }
 
+// These three functions define the different route lengths. Short Routes see a single CB Receiver War
+// Mid Routes are best 2 out of 3, deep routes are best 3 out of 5.
+export function shortRoute({
+  wrObj,
+  cbObj,
+  accelWin,
+  setAccelWin,
+  accelCrit,
+  setAccelCrit,
+  speedWin,
+  setSpeedWin,
+  speedCrit,
+  setSpeedCrit,
+  coverWin,
+  setCoverWin,
+  coverCrit,
+  setCoverCrit,
+  wrOpen,
+  setWrOpen,
+}) {
+  //
+  cbReceiverWar(
+    wrObj,
+    cbObj,
+    accelWin,
+    setAccelWin,
+    accelCrit,
+    setAccelCrit,
+    speedWin,
+    setSpeedWin,
+    speedCrit,
+    setSpeedCrit,
+    coverWin,
+    setCoverWin,
+    coverCrit,
+    setCoverCrit,
+    wrOpen,
+    setWrOpen
+  );
+
+  if (wrOpen === true) {
+    console.log("Mailbox!");
+  } else {
+    console.log("Strapped!");
+  }
+}
+
+export function midRoute({
+  wrObj,
+  cbObj,
+  accelWin,
+  setAccelWin,
+  accelCrit,
+  setAccelCrit,
+  speedWin,
+  setSpeedWin,
+  speedCrit,
+  setSpeedCrit,
+  coverWin,
+  setCoverWin,
+  coverCrit,
+  setCoverCrit,
+  wrOpen,
+  setWrOpen,
+}) {}
+
+export function deepRoute({
+  wrObj,
+  cbObj,
+  accelWin,
+  setAccelWin,
+  accelCrit,
+  setAccelCrit,
+  speedWin,
+  setSpeedWin,
+  speedCrit,
+  setSpeedCrit,
+  coverWin,
+  setCoverWin,
+  coverCrit,
+  setCoverCrit,
+  wrOpen,
+  setWrOpen,
+}) {}
+
 // This function is the big bad battle. Acceleration determines who wins off the line, so that counts for the first
 // 1 seconds of the route. Speed determines who's more likely to win after that.
 // Unless the speed win is above 10 or more, you have three coverage vs. route running rolls,
@@ -92,6 +177,8 @@ function routeVCover(
 // Whoever wins has a +10 advantage to a catch, but if they lost on a 95+ critical, or if they lose by 20 or more,
 // they don't even get a catch roll. Later we'll add a yardage estimation (for short, medium, and long)
 // to progress down the field.
+
+// We need this function to return a win state or a crit state. Should we really be tracking all of these states?
 
 export function cbReceiverWar(
   wrObj,
